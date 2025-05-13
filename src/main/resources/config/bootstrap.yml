@@ -12,6 +12,26 @@ spring:
     # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
     active: '@spring.profiles.active@'
   cloud:
+    config:
+      uri: http://localhost:8888
+      label: beta
+      profile: dev
+      format: yaml
+      fail-fast: true
+      retry:
+        enabled: true
+        max-attempts: 6
+        initial-interval: 1000
+        multiplier: 2
+        max-interval: 5000
+    vault:
+      uri: http://localhost:8400
+      authentication: TOKEN
+      token: root
+      kv:
+        enabled: true
+        backend: secret
+        default-context: microProject
     consul:
       config:
         fail-fast: false # if not in "prod" profile, do not force to use Spring Cloud Config
@@ -32,4 +52,4 @@ spring:
     compose:
       enabled: true
       lifecycle-management: start-only
-      file: src/main/docker/mysql.yml
+      file: src/main/docker/services.yml

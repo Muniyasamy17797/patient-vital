@@ -1,7 +1,5 @@
 package com.vital.app;
 
-import com.vital.app.config.ApplicationProperties;
-import com.vital.app.config.CRLFLogConverter;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,6 +14,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
+
+import com.vital.app.infrastructure.config.ApplicationProperties;
+import com.vital.app.infrastructure.config.CRLFLogConverter;
+
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
