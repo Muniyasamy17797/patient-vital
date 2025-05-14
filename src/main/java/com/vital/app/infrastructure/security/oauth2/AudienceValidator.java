@@ -1,4 +1,4 @@
-package com.vital.app.security.oauth2;
+package com.vital.app.infrastructure.security.oauth2;
 
 import java.util.List;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.vital.app.security;
+package com.vital.app.infrastructure.security;
 
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;

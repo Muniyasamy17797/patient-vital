@@ -57,7 +57,7 @@ logging:
     org.springframework.cloud.vault: DEBUG
 
 server:
-  port: 8090
+  port: 8000
 
 springdoc:
   api-docs:
