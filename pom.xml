@@ -236,6 +236,41 @@
       <artifactId>spring-cloud-starter-openfeign</artifactId>
     </dependency>
 
+    <!-- Spring Boot Test -->
+
+    <!-- Spring Boot Starter Test (includes JUnit, Mockito, Hamcrest) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- AssertJ -->
+    <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>3.24.2</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- JSONassert -->
+    <dependency>
+        <groupId>org.skyscreamer</groupId>
+        <artifactId>jsonassert</artifactId>
+        <version>1.5.1</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- JsonPath -->
+    <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>2.8.0</version>
+        <scope>test</scope>
+    </dependency>
+
+
+
 
 
   </dependencies>
