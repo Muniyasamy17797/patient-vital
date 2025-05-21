@@ -13,7 +13,7 @@ spring:
     active: '@spring.profiles.active@'
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://config-service:8888
       label: beta
       profile: dev
       format: yaml
@@ -25,7 +25,7 @@ spring:
         multiplier: 2
         max-interval: 5000
     vault:
-      uri: http://localhost:8400
+      uri: http://vault:8400
       authentication: TOKEN
       token: root
       kv:
@@ -46,7 +46,7 @@ spring:
           - git-branch=${git.branch:}
           - context-path=${server.servlet.context-path:}
 
-      host: localhost
+      host: consul
       port: 8500
   docker:
     compose:
