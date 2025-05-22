@@ -1,6 +1,7 @@
 package com.vital.app.adoptor.in;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,42 +33,43 @@ public class VitalController {
 
     @PostMapping
     @Operation(summary = "Create a new vital sign record")
-    public ResponseEntity<VitalSignResponse> create(@RequestBody VitalRequest request) {
-        return ResponseEntity.ok(service.create(request));
+    public CompletableFuture<ResponseEntity<VitalSignResponse>> create(@RequestBody VitalRequest request) {
+        return service.create(request)
+            .thenApply(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing vital sign record")
-    public ResponseEntity<VitalSignResponse> update(@PathVariable Long id,
+    public CompletableFuture<ResponseEntity<VitalSignResponse>> update(@PathVariable Long id,
                                                     @RequestBody VitalRequest request
     ) {
-        return ResponseEntity.ok(service.update(id, request));
+        return service.update(id, request).thenApply(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get vital sign by ID")
-    public ResponseEntity<VitalSignResponse> getById(@PathVariable Long id) {
-        return service.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public CompletableFuture<ResponseEntity<VitalSignResponse>> getById(@PathVariable Long id) {
+        return service.getById(id).thenApply(opt -> opt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build()));
     }
 
     @GetMapping
     @Operation(summary = "Get all vital signs")
-    public ResponseEntity<List<VitalSignResponse>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public CompletableFuture<ResponseEntity<List<VitalSignResponse>>> getAll() {
+        return service.getAll().thenApply(ResponseEntity::ok);
     }
 
     @GetMapping("/paginated")
     @Operation(summary = "Get all vital signs with pagination")
-    public ResponseEntity<?> getAllPaginated(int offset, int limit) {
-        return ResponseEntity.ok(service.getAllPaginated(offset, limit));
+    public CompletableFuture<ResponseEntity<?>> getAllPaginated(int offset, int limit) {
+        return service.getAllPaginated(offset, limit).thenApply(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete vital sign by ID")
     @ApiResponse(responseCode = "204", description = "Deleted successfully")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public CompletableFuture<ResponseEntity<Void>> delete(@PathVariable Long id) {
+        return service.deleteById(id)
+                .thenApply(v -> ResponseEntity.noContent().build());
     }
     
 }

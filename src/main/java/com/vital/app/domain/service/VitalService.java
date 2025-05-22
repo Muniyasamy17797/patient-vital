@@ -2,9 +2,11 @@ package com.vital.app.domain.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,10 +22,12 @@ import com.vital.app.domain.mapper.VitalMapper;
 import com.vital.app.domain.model.VitalSign;
 import com.vital.app.domain.port.VitalUseCase;
 
+import io.micrometer.core.annotation.Timed;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
+
 public class VitalService  implements VitalUseCase{
 
     private final VitalSignRepository vitalSignRepository;
@@ -40,66 +44,70 @@ public class VitalService  implements VitalUseCase{
     }
 
     @Override
-    public VitalSignResponse create(VitalRequest request) {
-       
-            VitalSign vital = mapper.toEntity(request);
-            VitalSign saved = vitalSignRepository.save(vital);
-            VitalSignResponse response = getExternalData(saved);
-            return response;
-       
+    @Async("taskExecutor")
+    @Timed(value = "vitalService.create", description = "Time taken to create a vital sign")
+    public CompletableFuture<VitalSignResponse> create(VitalRequest request) {
+        VitalSign vital = mapper.toEntity(request);
+        VitalSign saved = vitalSignRepository.save(vital);
+        return CompletableFuture.completedFuture(getExternalData(saved));
     }
 
+    
     @Override
-    public VitalSignResponse update(Long id, VitalRequest request) {
+    @Timed(value = "vitalService.update", description = "Time taken to update a vital sign")
+    @Async("taskExecutor")
+    public CompletableFuture<VitalSignResponse> update(Long id, VitalRequest request) {
         VitalSign vital = vitalSignRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Vital sign not found: " + id));
         mapper.updateEntityFromDto(request, vital);
         VitalSign updated = vitalSignRepository.save(vital);
-        return getExternalData(updated);    
+        return CompletableFuture.completedFuture(getExternalData(updated));
+    }
+
+
+    @Override
+    @Timed(value = "vitalService.getById", description = "Time taken to get a vital sign by id")
+    @Async("taskExecutor")
+    public CompletableFuture<Optional<VitalSignResponse>> getById(Long id) {
+            return CompletableFuture.completedFuture(
+                vitalSignRepository.findById(id).map(this::getExternalData)
+            );
     }
 
 
 
     @Override
-    public Optional<VitalSignResponse> getById(Long id) {
-        return vitalSignRepository.findById(id)
-            .map(this::getExternalData);    
-        }
+    @Timed(value = "vitalService.getAll", description = "Time taken to get all vital signs")
+    public CompletableFuture<List<VitalSignResponse>> getAll() {
 
-
-
-    @Override
-    public List<VitalSignResponse> getAll() {
-
-         return vitalSignRepository.findAll().stream()
+         return CompletableFuture.completedFuture(vitalSignRepository.findAll().stream()
             .map(this::getExternalData)
-            .collect(Collectors.toList());    
+            .collect(Collectors.toList()));    
         }
 
 
-
     @Override
-    public PagedResponse<VitalSignResponse> getAllPaginated(int offset, int limit) {
-        
+    @Timed(value = "vitalService.getAllPaginated", description = "Time taken to get all vital signs paginated")
+    @Async("taskExecutor")
+    public CompletableFuture<PagedResponse<VitalSignResponse>> getAllPaginated(int offset, int limit) {
         var pageRequest = PageRequest.of(offset, limit);
         var page = vitalSignRepository.findAll(pageRequest);
         List<VitalSignResponse> responses = page.getContent().stream()
             .map(this::getExternalData)
             .collect(Collectors.toList());
-        return new PagedResponse<>(
-            responses,
-            page.getTotalElements(),
-            page.getNumber(),
-            page.getSize()
-        );
+        return CompletableFuture.completedFuture(new PagedResponse<>(
+            responses, page.getTotalElements(), page.getNumber(), page.getSize()
+        ));
     }
 
-
-
     @Override
-    public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+    @Timed(value = "vitalService.delete", description = "Time taken to delete a vital sign")
+    @Async("taskExecutor")
+    public CompletableFuture<Void> deleteById(Long id) {
+        VitalSign vital = vitalSignRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Vital sign not found: " + id));
+        vitalSignRepository.delete(vital);
+        return CompletableFuture.completedFuture(null);
     }
 
 

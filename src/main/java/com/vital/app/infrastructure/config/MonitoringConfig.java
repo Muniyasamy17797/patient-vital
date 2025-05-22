@@ -1,0 +1,32 @@
+package com.vital.app.infrastructure.config;
+
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+@Configuration
+@EnableAspectJAutoProxy
+public class MonitoringConfig {
+
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry registry) {
+        return new TimedAspect(registry);
+    }
+
+    @Bean
+    public CustomHealthIndicator customHealthIndicator() {
+        return new CustomHealthIndicator();
+    }
+}
+
+class CustomHealthIndicator implements org.springframework.boot.actuate.health.HealthIndicator {
+    @Override
+    public org.springframework.boot.actuate.health.Health health() {
+        return org.springframework.boot.actuate.health.Health.up()
+            .withDetail("app", "Vital Service")
+            .withDetail("error", "No errors")
+            .build();
+    }
+} 

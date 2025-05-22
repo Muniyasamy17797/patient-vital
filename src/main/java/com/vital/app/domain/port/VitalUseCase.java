@@ -2,6 +2,7 @@ package com.vital.app.domain.port;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import com.vital.app.domain.dto.PagedResponse;
 import com.vital.app.domain.dto.VitalRequest;
@@ -10,16 +11,16 @@ import com.vital.app.domain.dto.VitalSignResponse;
 public interface VitalUseCase {
 
 
-    VitalSignResponse create(VitalRequest request);
+    CompletableFuture<VitalSignResponse> create(VitalRequest request);
 
-    VitalSignResponse update(Long id, VitalRequest request);
+    CompletableFuture<VitalSignResponse> update(Long id, VitalRequest request);
 
-    Optional<VitalSignResponse> getById(Long id);
+    CompletableFuture<Optional<VitalSignResponse>> getById(Long id);
 
-    List<VitalSignResponse> getAll();
+    CompletableFuture<List<VitalSignResponse>> getAll();
 
-    PagedResponse<VitalSignResponse> getAllPaginated(int offset, int limit);
+    CompletableFuture<PagedResponse<VitalSignResponse>> getAllPaginated(int offset, int limit);
 
-    void deleteById(Long id);
+    CompletableFuture<Void> deleteById(Long id);
     
 }

@@ -27,6 +27,56 @@
     </root>
     -->
 
+    <property name="LOGS" value="./logs" />
+
+    <!-- Console Appender with JSON format -->
+    <appender name="Console-Json" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>correlation-id</includeMdcKeyName>
+            <includeMdcKeyName>user-id</includeMdcKeyName>
+            <includeMdcKeyName>request-id</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/vital-logger.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/vital-logger-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Async Appender -->
+    <appender name="Async" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>512</queueSize>
+        <appender-ref ref="RollingFile"/>
+    </appender>
+
+    <!-- Logger Configuration -->
+    <logger name="com.vital" level="DEBUG" additivity="false">
+        <appender-ref ref="Console-Json"/>
+        <appender-ref ref="Async"/>
+    </logger>
+
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="Console-Json"/>
+        <appender-ref ref="Async"/>
+    </logger>
+
+    <logger name="org.hibernate" level="INFO" additivity="false">
+        <appender-ref ref="Console-Json"/>
+        <appender-ref ref="Async"/>
+    </logger>
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="Console-Json"/>
+        <appender-ref ref="Async"/>
+    </root>
+
     <logger name="com.vital.app" level="INFO"/>
 
     <logger name="angus.activation" level="WARN"/>
@@ -50,11 +100,6 @@
     <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
     <logger name="org.bson" level="WARN"/>
     <logger name="org.hibernate.validator" level="WARN"/>
-    <logger name="org.hibernate" level="WARN"/>
-    <logger name="org.hibernate.ejb.HibernatePersistence" level="OFF"/>
-    <logger name="org.springframework" level="WARN"/>
-    <logger name="org.springframework.web" level="WARN"/>
-    <logger name="org.springframework.security" level="WARN"/>
     <logger name="org.springframework.boot.autoconfigure.logging" level="INFO"/>
     <logger name="org.springframework.cache" level="WARN"/>
     <logger name="org.thymeleaf" level="WARN"/>
